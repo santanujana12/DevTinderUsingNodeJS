@@ -1,5 +1,4 @@
 import express from "express";
-import mongoose from "mongoose";
 import { mongoDbConnectionService } from "./config/database.js";
 import User from "./Models/userModel.js";
 
@@ -28,14 +27,14 @@ app.get("/hello", (req, res, next) => {
   res.send("Hello World!");
 });
 
-app.post("/register",(req,res)=>{
-  const {firstName, lastName, emailId, password, age, gender} = req.body;
-  
+// Registration API
+app.post("/register", (req, res) => {
+  const { firstName, lastName, emailId, password, age, gender } = req.body;
+
   // One way of creating user
   // const user = new User(req.body);
   // await user.save();
-  console.log(req.body);
-  try{
+  try {
     User.create({
       firstName,
       lastName,
@@ -44,14 +43,50 @@ app.post("/register",(req,res)=>{
       age,
       gender,
     }),
-    res.status(200).send("User registered successfully");
-  }catch(err){
+      res.status(200).send("User registered successfully");
+  } catch (err) {
     console.log(err);
     res.status(500).send("Error registering user");
   }
-})
+});
 
+// Fetch users API
+app.get("/user", async (req, res) => {
+  const { email } = req.query;
+  try {
+    const user = await User.findOne({ emailId: email }).exec();
+    if (user) {
+      res.status(200).send(user);
+    } else {
+      res.status(404).send("User not found");
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error fetching user");
+  }
+});
 
+// Update user API
+app.put("/update-user/:email", async (req, res) => {
+  const { email } = req.params;
+  try {
+    const findUser = await User.findOneAndUpdate({ emailId: email }, req.body);
+    if (findUser) {
+      res.status(200).send("User updated successfully");
+    } else {
+      res.status(404).send("User not found");
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error updating user");
+  }
+});
+
+// Patch user API
+app.patch("/patch-user/:userid", async (req, res) => {
+  const { userid } = req.params;
+  
+});
 
 // Always call db connection first before starting the server
 const startExpressWithMongoDb = async () => {

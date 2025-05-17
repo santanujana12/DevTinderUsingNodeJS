@@ -5,9 +5,9 @@ import bcrypt from "bcrypt";
 export const Register = async (req, res) => {
   const { firstName, lastName, emailId, password, age, gender } = req.body;
 
-  if (!validator.isEmail(emailId)) {
-    return res.status(400).send("Invalid email");
-  }
+  // if (!validator.isEmail(emailId)) {
+  //   return res.status(400).send("Invalid email");
+  // }
   if (!validator.isStrongPassword(password)) {
     return res.status(400).send("Not a good password");
   }
